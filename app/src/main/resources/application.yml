@@ -1,0 +1,87 @@
+spring:
+  application:
+    name: orderlane
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orderlane
+    username: orderlane
+    password: orderlane
+    hikari:
+      maximum-pool-size: 30
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        # 중복 발행은 소비자의 이벤트 ID 중복 제거가 받는다. 브로커 기동 직후 프로듀서 ID 발급이 실패해 발행이 막히는 일을 피한다.
+        enable.idempotence: false
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  lifecycle:
+    timeout-per-shutdown-phase: 25s
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: orderlane
+
+logging:
+  structured:
+    format:
+      console: logstash
+  level:
+    root: INFO
+    org.apache.kafka: WARN
+
+orderlane:
+  auth:
+    token: demo-token
+    callback-secret: demo-callback-secret
+  gateway:
+    base-url: http://localhost:8090
+    callback-url: http://localhost:8080/callbacks/payments
+    timeout-ms: 1500
+  inventory:
+    strategy: optimistic
+  idempotency:
+    lock-ms: 30000
+  payment:
+    max-inquiries: 3
+    inquiry-interval-ms: 1000
+    held-interval-ms: 10000
+    poll-ms: 500
+  outbox:
+    topic: orderlane.events
+    batch-size: 50
+    poll-ms: 200
+  consumer:
+    max-attempts: 3
+    base-delay-ms: 200
+  settlement:
+    fee-bps: 300
+  faults:
+    enabled: false
+  cache:
+    ttl-seconds: 60
