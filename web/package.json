@@ -1,0 +1,8 @@
+{
+  "name": "orderlane-web",
+  "private": true,
+  "version": "0.0.0",
+  "description": "데모 사이트 시험(Playwright). 사이트 자체는 의존성 없는 정적 파일이다.",
+  "scripts": { "test": "playwright test" },
+  "devDependencies": { "@playwright/test": "1.49.1" }
+}

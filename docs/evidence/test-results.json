@@ -1,0 +1,856 @@
+{
+  "generatedAt": "2026-11-21T12:13:18Z",
+  "totals": {
+    "unit": {
+      "passed": 79,
+      "failed": 0
+    },
+    "integration": {
+      "passed": 29,
+      "failed": 0
+    },
+    "e2e": {
+      "passed": 11,
+      "failed": 0
+    }
+  },
+  "domainJs": {
+    "passed": 67,
+    "failed": 0
+  },
+  "tests": [
+    {
+      "kind": "unit",
+      "suite": "ConsumptionTest",
+      "name": "alreadyProcessedEventIsSkipped",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "ConsumptionTest",
+      "name": "failuresRetryWithDoublingDelay",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "ConsumptionTest",
+      "name": "lastAttemptFailureGoesToDeadLetter",
+      "status": "passed",
+      "ms": 27
+    },
+    {
+      "kind": "unit",
+      "suite": "ConsumptionTest",
+      "name": "singleAttemptPolicyDeadLettersImmediately",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "approvesAndDeclinesByToken",
+      "status": "passed",
+      "ms": 186
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "cancelIsIdempotentByKeyAndCappedAtRemaining",
+      "status": "passed",
+      "ms": 27
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "holdStaysPendingThenApproves",
+      "status": "passed",
+      "ms": 719
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "lateResponseStillRecordsTheApprovalForInquiry",
+      "status": "passed",
+      "ms": 312
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "lostRequestIsNotFoundOnInquiry",
+      "status": "passed",
+      "ms": 306
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "samePaymentRefReturnsTheFirstResult",
+      "status": "passed",
+      "ms": 8
+    },
+    {
+      "kind": "unit",
+      "suite": "GatewayTest",
+      "name": "settlementFileListsSalesAndInjectedAnomalies",
+      "status": "passed",
+      "ms": 310
+    },
+    {
+      "kind": "unit",
+      "suite": "IdempotencyTest",
+      "name": "completedSameBodyReplaysStoredResponse",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "IdempotencyTest",
+      "name": "differentBodyIsMismatchRegardlessOfStatus",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "IdempotencyTest",
+      "name": "inProgressAfterLockExpiryIsReclaimed",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "IdempotencyTest",
+      "name": "inProgressWithinLockIsConflict",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "IdempotencyTest",
+      "name": "unseenKeyProceeds",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "InventoryTest",
+      "name": "cannotReserveMoreThanAvailable",
+      "status": "passed",
+      "ms": 34
+    },
+    {
+      "kind": "unit",
+      "suite": "InventoryTest",
+      "name": "lastUnitCanBeReservedExactlyOnce",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "InventoryTest",
+      "name": "negativeStockCannotBeConstructed",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "InventoryTest",
+      "name": "releaseRestoresStock",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "InventoryTest",
+      "name": "reserveDecrementsAndBumpsVersion",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentCodecTest",
+      "name": "everyStateSurvivesAColumnRoundTrip",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentCodecTest",
+      "name": "unknownStateNameIsRejected",
+      "status": "passed",
+      "ms": 4
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "approvedAfterDeclinedIsRejectedAsConflict",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "callbackCanBeatTheSynchronousResponse",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "cancelAboveRemainingIsRejected",
+      "status": "passed",
+      "ms": 2
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "cancelIsRejectedUnlessApproved",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "cancellingTheRemainderBecomesFullyCancelled",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "declinedAfterApprovedIsRejectedAsConflict",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "duplicateApprovalCallbackIsIgnored",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "everyStateOutcomeSourcePairHasADefinedResult",
+      "status": "passed",
+      "ms": 4
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "heldStaysHeldWhilePendingAndResolvesLater",
+      "status": "passed",
+      "ms": 2
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "inquiryIsNotAllowedWhileStillRequested",
+      "status": "passed",
+      "ms": 15
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "inquiryTimeoutAlsoCountsTowardHeld",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "nonPositiveCancelAmountIsRejected",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "notFoundFromACallbackDoesNotDecline",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "partialCancelKeepsApprovedWithRemaining",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "partialCancelStateRejectsInvalidConstruction",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "pendingInquiriesCountUpAndEndInHeld",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "requestApprovedMovesToApproved",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "requestDeclinedMovesToDeclined",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "requestTimeoutMovesToUnknown",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "sameCancelKeyIsReplayedWithoutApplyingAgain",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "staleCallbackAfterResolutionIsIgnored",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "unknownNotFoundByInquiryMeansDeclined",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "unknownResolvedToApprovedByInquiry",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PaymentMachineTest",
+      "name": "zeroAmountPaymentCannotBeCreated",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "additionOverflowIsDetected",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "emptyOrderIsRejected",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "feeIsZeroWhenNetIsNotPositive",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "feeRoundsHalfUpInIntegerMinorUnits",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "lineSubtotalAddsOptionBeforeMultiplying",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "quantityLimitIsEnforced",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "sameItemOnTwoLinesIsMergedForStockCheck",
+      "status": "passed",
+      "ms": 3
+    },
+    {
+      "kind": "unit",
+      "suite": "PricingTest",
+      "name": "totalSumsLines",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "ProviderFileTest",
+      "name": "malformedRowFailsLoudlyInsteadOfBeingSkipped",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "ProviderFileTest",
+      "name": "parsesRowsAndSkipsHeaderAndBlankLines",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "amountDifferenceIsReportedWithBothAmounts",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "cancelAndSaleWithSameRefAreDifferentKeys",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "duplicateLedgerEntryIsReported",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "duplicateRowAtProviderIsReported",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "matchingFilesHaveNoMismatch",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "reportIsStableAcrossReruns",
+      "status": "passed",
+      "ms": 4
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "transactionMissingAtProviderIsReported",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "ReconciliationTest",
+      "name": "transactionMissingInLedgerIsReported",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "RequestHashTest",
+      "name": "hashIsStableAndSensitiveToContent",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "SettlementTest",
+      "name": "emptyInputHasNoStores",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "SettlementTest",
+      "name": "fullyCancelledSaleHasNoFee",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "SettlementTest",
+      "name": "resultDoesNotDependOnInputOrder",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "SettlementTest",
+      "name": "sameEventIdIsCountedOnce",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "SettlementTest",
+      "name": "settlesPerStoreWithSalesCancelsAndFee",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "callbackScenarioAppliesOnceIgnoresDuplicatesAndRejectsConflict",
+      "status": "passed",
+      "ms": 20
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "consumerFailureRecoversOrDeadLettersThenReplaysOnce",
+      "status": "passed",
+      "ms": 4
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "duplicateRequestVariantsAllHoldTheirInvariant",
+      "status": "passed",
+      "ms": 3
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "happyPathEndsPaid",
+      "status": "passed",
+      "ms": 0
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "lockedStrategiesNeverOversell",
+      "status": "passed",
+      "ms": 3
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "paymentTimeoutVariantsAllResolve",
+      "status": "passed",
+      "ms": 1
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "resultSerializesToJsonWithEscapes",
+      "status": "passed",
+      "ms": 27
+    },
+    {
+      "kind": "unit",
+      "suite": "SimulationTest",
+      "name": "unlockedReadThenWriteOversells",
+      "status": "passed",
+      "ms": 59
+    },
+    {
+      "kind": "integration",
+      "suite": "ConcurrencyIT",
+      "name": "optimisticLockingNeverOversellsAcrossRepeatedRounds",
+      "status": "passed",
+      "ms": 11501
+    },
+    {
+      "kind": "integration",
+      "suite": "ConcurrencyIT",
+      "name": "pessimisticLockingNeverOversellsAcrossRepeatedRounds",
+      "status": "passed",
+      "ms": 9538
+    },
+    {
+      "kind": "integration",
+      "suite": "EventFlowIT",
+      "name": "cancelledOrderLeavesKitchenAndLedgerRecordsCancel",
+      "status": "passed",
+      "ms": 265
+    },
+    {
+      "kind": "integration",
+      "suite": "EventFlowIT",
+      "name": "outboxEventsReachKitchenNotificationAndLedger",
+      "status": "passed",
+      "ms": 400
+    },
+    {
+      "kind": "integration",
+      "suite": "EventFlowIT",
+      "name": "persistentConsumerFailureGoesToDeadLetterThenReplayDeliversWithoutDuplicates",
+      "status": "passed",
+      "ms": 1137
+    },
+    {
+      "kind": "integration",
+      "suite": "EventFlowIT",
+      "name": "redeliveredEventIsProcessedOnceByEveryConsumer",
+      "status": "passed",
+      "ms": 1786
+    },
+    {
+      "kind": "integration",
+      "suite": "EventFlowIT",
+      "name": "requestIdIsEchoedAndCarriedIntoTheEvent",
+      "status": "passed",
+      "ms": 291
+    },
+    {
+      "kind": "integration",
+      "suite": "EventFlowIT",
+      "name": "transientConsumerFailureIsRetriedAndSucceeds",
+      "status": "passed",
+      "ms": 431
+    },
+    {
+      "kind": "integration",
+      "suite": "OperationsIT",
+      "name": "dailySettlementIsPerStoreAndRerunGivesTheSameResult",
+      "status": "passed",
+      "ms": 739
+    },
+    {
+      "kind": "integration",
+      "suite": "OperationsIT",
+      "name": "healthAndMetricsAreExposed",
+      "status": "passed",
+      "ms": 402
+    },
+    {
+      "kind": "integration",
+      "suite": "OperationsIT",
+      "name": "menuReadIsCachedAndInvalidatedWhenStockChanges",
+      "status": "passed",
+      "ms": 366
+    },
+    {
+      "kind": "integration",
+      "suite": "OperationsIT",
+      "name": "reconciliationMatchesCleanFilesAndReportsInjectedMismatches",
+      "status": "passed",
+      "ms": 458
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "abandonedInProgressKeyIsReclaimedWithoutCreatingASecondOrder",
+      "status": "passed",
+      "ms": 216
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "declinedPaymentReleasesStockAndMarksOrderFailed",
+      "status": "passed",
+      "ms": 270
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "lastUnitSoldOnceThenSoldOutIsReplayedConsistently",
+      "status": "passed",
+      "ms": 151
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "placesOrderAndChargesServerComputedTotal",
+      "status": "passed",
+      "ms": 246
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "rejectsBadRequests",
+      "status": "passed",
+      "ms": 54
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "requestRetriedWhileFirstIsInFlightGetsConflictThenReplay",
+      "status": "passed",
+      "ms": 591
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "sameKeyAndBodyReplaysTheFirstResponse",
+      "status": "passed",
+      "ms": 132
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "sameKeyWithDifferentBodyIsRejected",
+      "status": "passed",
+      "ms": 133
+    },
+    {
+      "kind": "integration",
+      "suite": "OrderApiIT",
+      "name": "soldOutOnSecondLineRollsBackTheFirstReservation",
+      "status": "passed",
+      "ms": 346
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "cancellationAboveRemainingOrOnUnpaidOrderIsRejected",
+      "status": "passed",
+      "ms": 302
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "conflictingCallbackIsRejectedAndRecordedWithoutChangingState",
+      "status": "passed",
+      "ms": 167
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "duplicateAndReorderedCallbacksApplyExactlyOnce",
+      "status": "passed",
+      "ms": 1815
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "partialThenRemainingCancellationEndsCancelledAndReturnsStock",
+      "status": "passed",
+      "ms": 491
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "requestLostAtGatewayIsConfirmedDeclinedAndStockReturns",
+      "status": "passed",
+      "ms": 1235
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "sameCancelKeyIsAppliedOnlyOnce",
+      "status": "passed",
+      "ms": 105
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "timedOutPaymentIsPendingThenConfirmedApprovedByInquiry",
+      "status": "passed",
+      "ms": 1159
+    },
+    {
+      "kind": "integration",
+      "suite": "PaymentResolutionIT",
+      "name": "unresolvedPaymentIsHeldThenSweptWhenGatewayConfirms",
+      "status": "passed",
+      "ms": 4029
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "cancellationsAreIdempotentAndPartialCancelKeepsTheOrderPaid",
+      "status": "passed",
+      "ms": 640
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "consumerFailureGoesToDeadLetterAndReplayCommandRecovers",
+      "status": "passed",
+      "ms": 1462
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "duplicateAndReorderedCallbacksFromTheGatewayApplyOnce",
+      "status": "passed",
+      "ms": 2685
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "duplicateRequestsAreSafeAcrossTheWire",
+      "status": "passed",
+      "ms": 1455
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "healthMetricsAndRequestIdAreExposed",
+      "status": "passed",
+      "ms": 616
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "heldPaymentIsSweptToApproved",
+      "status": "passed",
+      "ms": 5934
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "inFlightRequestFinishesWhenTheServerIsTerminated",
+      "status": "passed",
+      "ms": 7961
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "lastUnitIsSoldOnceUnderConcurrencyWithBothLockingStrategies",
+      "status": "passed",
+      "ms": 2290
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "orderFlowsThroughEveryContainerToKitchenNotificationAndLedger",
+      "status": "passed",
+      "ms": 516
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "paymentTimeoutIsResolvedByInquiry",
+      "status": "passed",
+      "ms": 4428
+    },
+    {
+      "kind": "e2e",
+      "suite": "StackE2E",
+      "name": "settlementAndReconciliationAgainstTheGatewayFile",
+      "status": "passed",
+      "ms": 972
+    }
+  ]
+}

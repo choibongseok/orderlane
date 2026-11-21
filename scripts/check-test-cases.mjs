@@ -55,7 +55,7 @@ if (existsSync(pw)) {
   for (const s of JSON.parse(readFileSync(pw, 'utf8')).suites ?? []) w(s);
 } else problems.push(`${pw} 가 없음: 브라우저 테스트 결과가 필요함`);
 
-const rows = doc.split('\n').filter((l) => /^\| [A-Z]+-\d{3} \|/.test(l)).map((l) => l.split(' | ').map((c) => c.replace(/^\| /, '').replace(/ \|$/, '').trim()));
+const rows = doc.split('\n').filter((l) => /^\| [A-Z0-9]+-\d{3} \|/.test(l)).map((l) => l.split(' | ').map((c) => c.replace(/^\| /, '').replace(/ \|$/, '').trim()));
 const kindOf = (f) => (f.startsWith('app/src/test/') && /IT\.kt$/.test(f) ? 'integration' : f.startsWith('e2e/') || f.startsWith('web/e2e/') ? 'e2e' : 'unit');
 const perKind = { unit: 0, integration: 0, e2e: 0 };
 const ids = new Set();
