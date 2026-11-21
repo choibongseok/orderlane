@@ -2,12 +2,12 @@
 import * as domain from './orderlane-domain.mjs';
 
 const SCENARIOS = {
-  'happy': { label: '정상 주문', tech: '기준 흐름', desc: '손님이 주문하면 재고를 잡고, 결제를 승인받고, 주방·알림·정산에 소식이 전달됩니다. 아무 문제가 없을 때의 기준 모습입니다.' },
-  'duplicate-request': { label: '같은 주문이 두 번 들어옴', tech: '멱등 키', desc: '응답을 못 받은 앱이 같은 요청을 다시 보냅니다. 요청마다 붙은 이름표(멱등 키)와 내용을 비교해 어떻게 답할지 정합니다.' },
-  'concurrent-order': { label: '마지막 1개를 동시에 주문', tech: '재고 잠금', desc: '여러 명이 같은 순간에 마지막 재고를 주문합니다. 재고를 지키는 방식에 따라 결과가 달라집니다.' },
-  'payment-timeout': { label: '결제 응답이 안 옴', tech: '결과 불명', desc: '결제사 응답이 오지 않아 승인됐는지 알 수 없습니다. 결제사에 다시 물어봐서 확정합니다.' },
-  'callbacks': { label: '결제사 알림이 중복·뒤바뀜', tech: '콜백', desc: '결제사가 같은 알림을 두 번 보내거나, 오래된 알림을 뒤늦게 보냅니다. 이미 승인된 결제에 거절 알림이 오는 이상한 경우도 있습니다.' },
-  'consumer-failure': { label: '후속 처리가 실패함', tech: '재시도 · dead-letter', desc: '결제 뒤에 이어지는 알림 전송이 실패합니다. 다시 시도하고, 안 되면 보관함에 두었다가 재처리합니다.' },
+  'happy': { label: '정상 주문', tech: '기준 흐름', desc: '손님이 주문하면 서버가 재고를 빼고, 결제를 승인받고, 주방·알림·정산에 알립니다. 아무 문제가 없을 때의 기준 모습입니다.' },
+  'duplicate-request': { label: '같은 주문이 두 번 들어옴', tech: '멱등 키', desc: '응답을 못 받은 앱이 같은 주문을 다시 보냅니다. 서버가 이름표(멱등 키)와 주문 내용을 비교해 답을 정합니다.' },
+  'concurrent-order': { label: '마지막 1개를 동시에 주문', tech: '재고 잠금', desc: '여러 명이 같은 순간에 마지막 재고를 주문합니다. 재고를 지키는 방법에 따라 결과가 달라집니다.' },
+  'payment-timeout': { label: '결제 응답이 안 옴', tech: '결과 불명', desc: '결제사 응답이 오지 않아 승인됐는지 모릅니다. 서버가 결제사에 다시 물어봐서 결과를 정합니다.' },
+  'callbacks': { label: '결제사 알림이 중복·뒤바뀜', tech: '콜백', desc: '결제사가 같은 알림을 두 번 보내거나 오래된 알림을 늦게 보냅니다. 승인된 결제에 거절 알림이 오는 경우도 있습니다.' },
+  'consumer-failure': { label: '후속 처리가 실패함', tech: '재시도 · dead-letter', desc: '결제 뒤에 보내는 알림이 실패합니다. 서버가 다시 시도하고, 안 되면 보관함에 넣었다가 재처리합니다.' },
 };
 const VARIANTS = {
   'duplicate-request': { 'replay': '같은 요청 다시 보내기', 'in-flight': '처리 중에 다시 보내기', 'mismatch': '같은 키로 다른 내용 보내기', 'reclaim': '서버가 죽은 뒤 다시 보내기' },
@@ -31,15 +31,31 @@ const EASY = {
   'consumer-failure:recovers': '알림 전송이 두 번 실패했지만 다시 시도해서 성공했습니다.',
   'consumer-failure:dead-letter': '알림 전송이 계속 실패해 보관함에 두었고, 재처리 명령으로 알림만 다시 처리했습니다. 이미 끝난 처리는 건너뛰었습니다.',
 };
+const TITLE = {
+  'happy:default': '주문 1건이 결제까지 끝났습니다',
+  'duplicate-request:replay': '주문은 1건만 만들어졌습니다',
+  'duplicate-request:in-flight': '처리 중인 주문은 다시 만들어지지 않았습니다',
+  'duplicate-request:mismatch': '내용이 다른 요청은 거절됐습니다',
+  'duplicate-request:reclaim': '이어받아서 주문은 1건으로 끝났습니다',
+  'concurrent-order:optimistic': '재고만큼만 팔렸습니다',
+  'concurrent-order:pessimistic': '재고만큼만 팔렸습니다',
+  'concurrent-order:naive': '재고보다 많이 팔렸습니다 (잠금 없는 비교용)',
+  'payment-timeout:approved-by-inquiry': '결제사에 다시 물어 결제를 확정했습니다',
+  'payment-timeout:declined-not-found': '결제가 안 된 것을 확인하고 재고를 돌려놨습니다',
+  'payment-timeout:held-then-resolved': '보류했다가 결제를 확정했습니다',
+  'callbacks:default': '같은 알림은 한 번만 반영됐습니다',
+  'consumer-failure:recovers': '알림이 재시도 끝에 전송됐습니다',
+  'consumer-failure:dead-letter': '실패한 알림만 다시 처리했습니다',
+};
 const TOUR = [
-  { title: '주문 한 건은 이렇게 끝납니다', text: ['손님이 주문하면 재고를 잡고, 결제를 승인받고, 주방·알림·정산에 소식이 전달됩니다.', '아무 문제가 없을 때의 기준 모습입니다. 이어지는 장에서 일부러 고장을 냅니다.'], look: '위쪽 "결과"와 가운데 "진행 순서"', scenario: 'happy', variant: 'default', hl: ['#p-result', '#p-timeline'] },
-  { title: '같은 주문이 두 번 들어와도 한 건만 만들어집니다', text: ['응답을 못 받은 앱이 같은 요청을 다시 보내는 일은 흔합니다. 요청마다 붙은 이름표(멱등 키)로 같은 요청임을 알아보고, 처음 응답을 그대로 돌려줍니다.', '같은 이름표인데 내용이 다르면 거절하고, 처리 중에 또 오면 "처리 중"이라고 답합니다.'], look: '"일부러 고장 내 보기"에서 네 가지를 바꿔 보세요', scenario: 'duplicate-request', variant: 'replay', hl: ['#p-controls', '#p-timeline'] },
-  { title: '마지막 1개를 동시에 주문해도 초과 판매는 없습니다', text: ['여러 명이 같은 순간에 주문하면 한 명만 성공하고 나머지는 품절 안내를 받아야 합니다. 재고 칸을 잠그는 두 방식(낙관적·비관적)이 모두 그렇게 동작합니다.', '"잠금 없음(비교용)"으로 바꾸면 재고보다 많이 팔리는 것을 볼 수 있습니다.'], look: '위쪽 "결과"의 초과 판매 수치', scenario: 'concurrent-order', variant: 'optimistic', hl: ['#p-result', '#p-stats', '#p-controls'] },
-  { title: '결제 응답이 안 오면 다시 물어봐서 확정합니다', text: ['결제사 응답이 늦으면 승인됐는지 알 수 없습니다. 이때 거절하거나 승인으로 간주하지 않고 "모름" 상태로 두고, 결제사에 결과를 다시 물어봅니다.', '끝내 모르면 "보류"로 두고 계속 다시 확인합니다. 그동안 재고는 잡아 둡니다.'], look: '진행 순서의 상태 표시(UNKNOWN → APPROVED)', scenario: 'payment-timeout', variant: 'approved-by-inquiry', hl: ['#p-timeline'] },
-  { title: '결제사 알림이 두 번·뒤바뀌어 와도 한 번만 반영됩니다', text: ['같은 승인 알림은 한 번만 반영하고, 늦게 온 오래된 알림은 무시합니다.', '이미 승인된 결제에 거절 알림이 오면 반영하지 않고 사람이 볼 수 있게 불일치로 기록합니다.'], look: '위쪽 수치(반영·무시·거부)와 진행 순서', scenario: 'callbacks', variant: 'default', hl: ['#p-stats', '#p-timeline'] },
-  { title: '후속 처리가 실패해도 잃어버리지 않습니다', text: ['알림 전송 같은 후속 처리가 실패하면 몇 번 다시 시도하고, 그래도 안 되면 보관함(dead-letter)에 둔 채 다음 일을 진행합니다.', '원인을 고친 뒤 재처리 명령을 내리면 실패했던 처리만 실행되고, 이미 끝난 처리는 중복으로 보고 건너뜁니다.'], look: '"일부러 고장 내 보기"의 보관함 → 재처리', scenario: 'consumer-failure', variant: 'dead-letter', hl: ['#p-controls', '#p-timeline'] },
-  { title: '하루 정산과 결제사 대조', text: ['하루 매출을 매장별로 처음부터 다시 계산하므로 몇 번 돌려도 결과가 같습니다. 결제사가 보낸 거래 내역 파일과 우리 기록을 맞춰 보며 빠진 것·금액이 다른 것·중복된 것을 찾아냅니다.', '이 부분은 이 화면의 시뮬레이션이 아니라, 실제 서버를 띄워 확인한 시험 결과로 보여 줍니다.'], look: '아래 "전체 구성 시험이 확인한 것"의 정산·대사', scenario: null, hl: ['#p-e2e'] },
-  { title: '이 화면은 어디까지 진짜일까요', text: ['진행 순서의 규칙은 서버가 쓰는 것과 같은 Kotlin 코드를 JavaScript 로 바꿔 브라우저에서 실행한 것입니다. 네트워크·DB·브로커는 없는 시뮬레이션입니다.', '아래 테스트 출력과 동시성 표는 실제로 돌린 결과 파일을 그대로 읽은 것입니다.'], look: '아래 "실제 테스트 실행 출력"과 "동시성 테스트 결과"', scenario: null, hl: ['#p-log', '#p-conc'] },
+  { title: '주문 하나가 끝까지 처리되는 모습', text: ['손님이 주문하면 서버는 재고를 빼 두고 결제사에 결제를 요청합니다.', '결제가 승인되면 주방 화면과 알림, 정산 기록에 주문이 전달됩니다. 아무 문제가 없을 때의 모습입니다.'], look: '위쪽 "결과"와 가운데 "진행 순서"', scenario: 'happy', variant: 'default', hl: ['#p-result', '#p-timeline'] },
+  { title: '같은 주문이 두 번 들어와도 1건만 만들어집니다', text: ['휴대폰이 응답을 못 받으면 같은 주문을 한 번 더 보내기도 합니다. 주문마다 붙은 이름표(멱등 키)가 같으면 서버는 새로 만들지 않고 처음 응답을 돌려줍니다.', '이름표는 같은데 주문 내용이 다르면 거절합니다. 처음 주문이 아직 처리 중이면 "처리 중"이라고 답합니다.'], look: '"일부러 고장 내 보기"에서 네 가지를 눌러 보세요', scenario: 'duplicate-request', variant: 'replay', hl: ['#p-controls', '#p-timeline'] },
+  { title: '마지막 1개를 여러 명이 동시에 주문하면', text: ['한 명만 주문에 성공하고 나머지는 품절 안내를 받습니다. 재고를 지키는 방법은 두 가지(낙관적 잠금, 비관적 잠금)이고 둘 다 그렇게 동작합니다.', '"잠금 없음(비교용)"을 누르면 재고보다 많이 팔리는 경우를 볼 수 있습니다.'], look: '위쪽 "결과"의 "초과 판매" 숫자', scenario: 'concurrent-order', variant: 'optimistic', hl: ['#p-result', '#p-stats', '#p-controls'] },
+  { title: '결제 응답이 안 오면 결제사에 다시 물어봅니다', text: ['응답이 없으면 승인됐는지 알 수 없습니다. 서버는 거절도 승인도 하지 않고 "모름"으로 두고, 결제사에 결과를 다시 물어봅니다.', '계속 모르면 "보류"로 두고 계속 다시 물어봅니다. 그동안 재고는 빼 둔 채로 둡니다.'], look: '진행 순서의 상태 표시(UNKNOWN → APPROVED)', scenario: 'payment-timeout', variant: 'approved-by-inquiry', hl: ['#p-timeline'] },
+  { title: '결제사 알림이 두 번 오거나 순서가 바뀌어도 한 번만 반영됩니다', text: ['같은 승인 알림은 한 번만 반영하고, 늦게 도착한 오래된 알림은 무시합니다.', '이미 승인된 결제에 "거절" 알림이 오면 반영하지 않고, 나중에 사람이 볼 수 있게 기록해 둡니다.'], look: '위쪽 숫자(반영·무시·거부)와 진행 순서', scenario: 'callbacks', variant: 'default', hl: ['#p-stats', '#p-timeline'] },
+  { title: '알림 전송이 실패해도 주문은 사라지지 않습니다', text: ['알림 전송 같은 뒤처리가 실패하면 서버가 몇 번 다시 시도합니다. 그래도 안 되면 실패한 건을 보관함(dead-letter)에 넣고 다음 일을 계속합니다.', '원인을 고치고 재처리 명령을 내리면 실패했던 처리만 다시 실행합니다. 이미 끝난 처리는 건너뜁니다.'], look: '"일부러 고장 내 보기"의 "보관함 → 재처리"', scenario: 'consumer-failure', variant: 'dead-letter', hl: ['#p-controls', '#p-timeline'] },
+  { title: '하루 정산과 결제사 거래 내역 대조', text: ['하루치 매출을 매장별로 처음부터 다시 계산하므로 몇 번 돌려도 결과가 같습니다. 결제사가 준 거래 내역 파일과 우리 기록을 맞춰 보면서 빠진 거래나 금액이 다른 거래를 찾고, 같은 거래가 두 번 들어간 것도 찾습니다.', '이 부분은 화면 안의 모의 실행으로는 볼 수 없습니다. 서버를 실제로 띄워 돌려 본 결과를 아래에 적어 두었습니다.'], look: '아래 "서버를 실제로 띄워 확인한 것"의 "정산·대사"', scenario: null, hl: ['#p-e2e'] },
+  { title: '이 화면에서 실제 코드인 부분', text: ['주문을 받을지, 결제를 확정할지 정하는 규칙은 서버와 같은 Kotlin 코드를 JavaScript로 바꿔 이 브라우저에서 돌립니다. 서버, DB, 메시지 브로커는 없습니다.', '아래 테스트 결과와 동시 주문 표는 실제로 테스트를 돌려 남긴 파일에서 읽은 값입니다.'], look: '아래 "테스트 실행 결과"와 "동시 주문 테스트 결과"', scenario: null, hl: ['#p-log', '#p-conc'] },
 ];
 
 const $ = (s) => document.querySelector(s);
@@ -90,7 +106,7 @@ function render() {
 
   $('#scenario-desc').textContent = sc.desc;
   $('#scenario-title').textContent = `진행 순서 — ${result.title}`;
-  $('#verdict-title').textContent = result.verdictOk ? '규칙이 지켜졌습니다' : '규칙이 깨졌습니다 (비교용)';
+  $('#verdict-title').textContent = TITLE[`${state.scenario}:${state.variant}`] ?? (result.verdictOk ? '기대한 대로 처리됐습니다' : '기대와 다른 결과가 나왔습니다');
   $('#easy').textContent = EASY[`${state.scenario}:${state.variant}`] ?? '';
   $('#verdict').textContent = result.verdict;
   $('#p-result').dataset.ok = String(result.verdictOk);
@@ -113,9 +129,9 @@ for (const id of ['#p-stock', '#p-buyers']) $(id).addEventListener('input', rend
 
 async function loadJson(p) { const r = await fetch(p); if (!r.ok) throw new Error(`${p} ${r.status}`); return r.json(); }
 const KIND_DESC = {
-  unit: '도메인 규칙(결제 상태·멱등·재고·정산·대사), 모의 결제사, 어댑터',
-  integration: '실제 PostgreSQL·Redis·Redpanda 로 주문·결제·이벤트·정산·재고 동시성',
-  e2e: 'compose 전체 구성 + 결제사 고장 주입 + 동시성 + 종료 중 요청',
+  unit: '주문·결제 처리 규칙(결제 상태, 중복 요청, 재고, 정산, 대사), 모의 결제사',
+  integration: '실제 PostgreSQL·Redis·Redpanda 를 띄워 주문, 결제, 알림 전달, 정산, 재고 동시성',
+  e2e: '서버 전체를 띄워 결제사 고장, 동시 주문, 종료 중 요청',
 };
 
 async function renderEvidence() {
@@ -124,9 +140,8 @@ async function renderEvidence() {
     const t = tests.totals[k] ?? { passed: 0, failed: 0 };
     return el('tr', {}, el('td', { text: k }), el('td', { text: KIND_DESC[k] }), el('td', { class: 'num ' + (t.failed ? '' : 'good'), text: String(t.passed) }), el('td', { class: 'num ' + (t.failed ? 'bad' : ''), text: String(t.failed) }));
   }));
-  $('#test-count').textContent = String(tests.tests.length);
   $('#test-output').textContent = tests.tests.map((t) => `${t.status === 'passed' ? 'PASS' : 'FAIL'}  ${t.kind.padEnd(11)} ${t.suite} > ${t.name}`).join('\n') +
-    `\n\n도메인 모듈을 JavaScript(Node)로 컴파일해 같은 테스트를 돌린 결과: 통과 ${tests.domainJs.passed}, 실패 ${tests.domainJs.failed}\n집계 시각 ${tests.generatedAt}`;
+    `\n\n같은 처리 규칙을 JavaScript(Node)로 바꿔 같은 테스트를 돌린 결과: 통과 ${tests.domainJs.passed}, 실패 ${tests.domainJs.failed}\n집계 시각 ${tests.generatedAt}`;
   $('#conc-buyers').textContent = String(conc.buyersPerRound);
   const rows = [];
   for (const s of conc.strategies) for (const c of s.cases) {
@@ -221,7 +236,6 @@ $('#theme').addEventListener('click', () => {
 
 render();
 if (!hasSeen()) tourOpen(0, false, false);
-$('#engine').textContent = `산출물 orderlane-domain.mjs, 시나리오 ${meta.scenarios.length}개`;
 renderEvidence().then(() => { document.body.dataset.ready = 'true'; }).catch((e) => {
   $('#test-output').textContent = '증거 파일을 읽지 못했습니다: ' + e.message;
   document.body.dataset.ready = 'true';

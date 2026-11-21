@@ -17,10 +17,11 @@ const fact = (page: Page, key: string) => page.locator('#p-stats .stat').filter(
 test('도메인 엔진(Kotlin→JS)이 뜨고 첫 화면 문장과 기본 결과가 나오며 콘솔 오류가 없다', async ({ page }) => {
   const errors = await open(page);
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('#banner')).toContainText('도메인 규칙만 실제 코드');
-  await expect(page.locator('#engine')).toContainText('orderlane-domain.mjs');
-  await expect(page.locator('#h-hero')).toContainText('돈과 재고가 틀어지지 않게');
-  await expect(page.locator('#verdict-title')).toHaveText('규칙이 지켜졌습니다');
+  await expect(page.locator('#banner')).toContainText('실제 서버와 같은 코드');
+  await expect(page.locator('#h-hero')).toHaveText('주문·결제 서버 모의 테스트');
+  await expect(page.locator('.lead')).toContainText('매장 주문을 받는 서버를 Kotlin·Spring Boot로 만들었습니다');
+  await expect(page).toHaveTitle('주문·결제 서버 모의 테스트 — Orderlane');
+  await expect(page.locator('#verdict-title')).toHaveText('주문 1건이 결제까지 끝났습니다');
   await expect(page.locator('#easy')).toContainText('주문은 한 건 만들어졌고');
   await expect(page.locator('#timeline li .state-chip', { hasText: 'APPROVED' })).toBeVisible();
   await expect(page.locator('#rules tbody tr').first()).toContainText('Idempotency.decide');
@@ -45,13 +46,13 @@ test('마지막 1개 동시 주문: 두 잠금 방식은 초과 판매가 없고
   await open(page);
   await scenario(page, /마지막 1개/);
   await expect(page.locator('#params')).toBeVisible();
-  await expect(page.locator('#verdict-title')).toHaveText('규칙이 지켜졌습니다');
+  await expect(page.locator('#verdict-title')).toHaveText('재고만큼만 팔렸습니다');
   await expect(fact(page, '초과 판매')).toHaveText('0');
   await expect(page.locator('#timeline')).toContainText('버전 불일치: 재시도');
   await variant(page, '비관적 잠금');
-  await expect(page.locator('#verdict-title')).toHaveText('규칙이 지켜졌습니다');
+  await expect(page.locator('#verdict-title')).toHaveText('재고만큼만 팔렸습니다');
   await variant(page, '잠금 없음(비교용)');
-  await expect(page.locator('#verdict-title')).toContainText('규칙이 깨졌습니다');
+  await expect(page.locator('#verdict-title')).toContainText('재고보다 많이 팔렸습니다');
   await expect(fact(page, '초과 판매')).toHaveText('4');
   await page.locator('#p-stock').fill('3');
   await page.locator('#p-buyers').fill('10');
@@ -103,7 +104,7 @@ test('실제 테스트 결과·동시성 반복 결과·e2e 시나리오가 결�
   await expect(page.locator('#test-summary tbody tr td:nth-child(4)').first()).toHaveText('0');
   await page.locator('#test-list summary').click();
   await expect(page.locator('#test-output')).toContainText('PASS  unit');
-  await expect(page.locator('#test-output')).toContainText('JavaScript(Node)로 컴파일해 같은 테스트를 돌린 결과');
+  await expect(page.locator('#test-output')).toContainText('같은 테스트를 돌린 결과');
   await expect(page.locator('#conc tbody tr')).toHaveCount(4);
   for (let i = 0; i < 4; i++) await expect(page.locator('#conc tbody tr').nth(i).locator('td').nth(3)).toHaveText('0');
   expect(await page.locator('#e2e li').count()).toBeGreaterThanOrEqual(9);
@@ -192,7 +193,7 @@ test('설명 따라가기: 시작하면 1/8 장이 열리고, 장을 넘기면 �
   await expect(page.locator('#tour-prog')).toHaveText('7/8');
   await expect(page.locator('#p-e2e')).toHaveClass(/tour-hl/);
   await page.locator('#tour-next').click();
-  await expect(page.locator('#tour-title')).toContainText('어디까지 진짜');
+  await expect(page.locator('#tour-title')).toContainText('실제 코드인 부분');
   await expect(page.locator('#tour-next')).toHaveText('마치기');
   await page.locator('#tour-next').click();
   await expect(page.locator('#tour')).toBeHidden();
