@@ -3,23 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Orderlane · 주문 처리 시뮬레이터</title>
-<meta name="description" content="같은 주문이 두 번 들어오거나 결제 응답이 안 올 때 돈과 재고가 틀어지지 않게 처리하는 과정을 보여 주는 데모. 도메인 규칙은 서버와 같은 Kotlin 코드를 JavaScript 로 컴파일해 브라우저에서 실행한다.">
+<title>주문·결제 서버 모의 테스트 — Orderlane</title>
+<meta name="description" content="매장 주문을 받는 서버를 Kotlin·Spring Boot로 만들었습니다. 같은 주문이 두 번 들어올 때, 마지막 하나를 여러 명이 동시에 주문할 때, 결제 응답이 안 올 때 서버가 어떻게 처리하는지 눌러서 확인할 수 있습니다.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <a class="skiplink" href="#timeline">본문으로 건너뛰기</a>
 <header class="top">
-  <div class="crumb"><span class="word">orderlane</span><span class="slash">/</span><span class="path">order-simulator</span></div>
-  <p class="banner" id="banner" role="note"><strong>브라우저 시뮬레이션</strong> — 도메인 규칙만 실제 코드(Kotlin → JavaScript). <span id="engine">엔진 불러오는 중</span>. 네트워크·DB·브로커 없음.</p>
+  <div class="crumb"><span class="word">orderlane</span><span class="slash">/</span><span class="path">매장 주문·결제 서버</span></div>
+  <p class="banner" id="banner" role="note"><strong>모의 실행</strong> 서버 없이 브라우저에서 도는 모의 실행입니다. 주문을 받을지 거절할지 정하는 규칙은 실제 서버와 같은 코드입니다.</p>
   <button id="theme" class="ghost" type="button" aria-label="테마 전환(다크/라이트)">◐</button>
 </header>
 
 <main class="grid">
   <section class="panel hero" aria-labelledby="h-hero">
-    <h1 id="h-hero">같은 주문이 두 번 들어오거나 결제 응답이 안 올 때, 돈과 재고가 틀어지지 않게 처리하는 과정을 보여 주는 데모입니다.</h1>
-    <p class="lead">일부러 고장을 내 보면서 주문·결제·정산이 어떻게 안전하게 끝나는지 확인합니다. 모든 데이터는 가짜입니다.</p>
+    <h1 id="h-hero">주문·결제 서버 모의 테스트</h1>
+    <p class="lead">매장 주문을 받는 서버를 Kotlin·Spring Boot로 만들었습니다. 같은 주문이 두 번 들어올 때, 마지막 하나를 여러 명이 동시에 주문할 때, 결제 응답이 안 올 때 서버가 어떻게 처리하는지 눌러서 확인할 수 있습니다.</p>
+    <p class="sub">주문과 금액은 모두 예시 데이터입니다.</p>
     <div class="hero-btns">
       <button id="tour-start" class="primary" type="button">설명 따라가기</button>
       <button id="tour-skip" class="ghost2" type="button">직접 해 보기</button>
@@ -60,26 +61,26 @@
   </section>
 
   <section class="panel rules" id="p-rules" aria-labelledby="h-rules">
-    <h2 id="h-rules" class="ptitle">실제로 실행된 도메인 규칙 호출 <span class="tag">domain</span></h2>
-    <div class="scroll"><table id="rules"><thead><tr><th>시간</th><th>주체</th><th>호출한 규칙</th><th>상태</th></tr></thead><tbody></tbody></table></div>
+    <h2 id="h-rules" class="ptitle">서버가 실행한 처리 <span class="tag">실제 코드 호출</span></h2>
+    <div class="scroll"><table id="rules"><thead><tr><th>시간</th><th>주체</th><th>호출한 코드</th><th>상태</th></tr></thead><tbody></tbody></table></div>
   </section>
 
   <section class="panel log" id="p-log" aria-labelledby="h-tests">
-    <h2 id="h-tests" class="ptitle">실제 테스트 실행 출력 <span class="tag">make verify</span></h2>
-    <p class="hint">아래는 <code>make verify</code> 가 돌린 결과 파일을 그대로 읽은 것입니다. 이 사이트가 만든 숫자가 아닙니다.</p>
-    <table id="test-summary"><thead><tr><th>종류</th><th>무엇을 시험하나</th><th>통과</th><th>실패</th></tr></thead><tbody></tbody></table>
-    <details id="test-list"><summary>테스트 전체 목록 (<span id="test-count">0</span>건)</summary><pre class="term" id="test-output" tabindex="0"></pre></details>
+    <h2 id="h-tests" class="ptitle">테스트 실행 결과 <span class="tag">make verify</span></h2>
+    <p class="hint">아래 숫자는 <code>make verify</code> 로 테스트를 돌리고 남긴 결과 파일에서 읽은 값입니다.</p>
+    <table id="test-summary"><thead><tr><th>종류</th><th>시험 내용</th><th>통과</th><th>실패</th></tr></thead><tbody></tbody></table>
+    <details id="test-list"><summary>테스트 이름 전체 보기</summary><pre class="term" id="test-output" tabindex="0"></pre></details>
   </section>
 
   <section class="panel conc" id="p-conc" aria-labelledby="h-conc">
-    <h2 id="h-conc" class="ptitle">동시성 테스트 결과 <span class="tag">초과 판매</span></h2>
-    <p class="hint">마지막 재고에 <span id="conc-buyers">24</span>명이 동시에 주문하는 시험을 두 가지 잠금 방식으로 라운드마다 재고를 되돌려 반복했습니다. 초과 판매 0 이 목표입니다.</p>
+    <h2 id="h-conc" class="ptitle">동시 주문 테스트 결과 <span class="tag">초과 판매</span></h2>
+    <p class="hint">재고가 1개일 때와 5개일 때, <span id="conc-buyers">24</span>명이 동시에 주문하는 테스트를 잠금 방식 두 가지로 반복했습니다. 재고보다 많이 팔리면 '초과 판매'에 숫자가 찍힙니다. 0이면 정상입니다.</p>
     <div class="scroll"><table id="conc"><thead><tr><th>잠금 방식</th><th>재고</th><th>반복</th><th>초과 판매</th><th>라운드별 판매 수</th><th>종료 재고</th></tr></thead><tbody></tbody></table></div>
   </section>
 
   <section class="panel e2e" id="p-e2e" aria-labelledby="h-e2e">
-    <h2 id="h-e2e" class="ptitle">전체 구성 시험이 확인한 것 <span class="tag">e2e</span></h2>
-    <p class="hint">앱·결제 게이트웨이(모의)·PostgreSQL·Redis·브로커를 compose 로 올려 바깥에서 확인한 내용입니다. 정산·결제사 대조도 여기서 확인합니다.</p>
+    <h2 id="h-e2e" class="ptitle">서버를 실제로 띄워 확인한 것 <span class="tag">e2e</span></h2>
+    <p class="hint">서버, 모의 결제사, PostgreSQL, Redis, 메시지 브로커를 docker compose 로 띄우고 바깥에서 요청을 보내 확인한 결과입니다. 하루 정산과 결제사 거래 내역 대조도 여기서 확인했습니다.</p>
     <ul id="e2e" class="plain"></ul>
   </section>
 
@@ -87,17 +88,17 @@
     <details>
       <summary id="h-gl">용어 풀이</summary>
       <dl>
-        <dt>멱등 키</dt><dd>같은 요청인지 알아보려고 요청마다 붙이는 이름표(<code>Idempotency-Key</code>). 같은 이름표면 처음 결과를 그대로 돌려줍니다.</dd>
-        <dt>낙관적 잠금</dt><dd>잠그지 않고 진행하되, 그 사이 다른 사람이 바꿨으면(버전이 달라졌으면) 다시 읽고 재시도하는 방식.</dd>
-        <dt>비관적 잠금</dt><dd>재고 칸을 먼저 잠그고 한 명씩 처리하는 방식.</dd>
-        <dt>아웃박스</dt><dd>주문·결제 변경과 같은 트랜잭션에 "보낼 소식"을 같이 적어 두고 따로 전달하는 방식. 변경과 소식이 따로 놀지 않습니다.</dd>
-        <dt>dead-letter</dt><dd>여러 번 재시도해도 처리하지 못한 소식을 버리지 않고 모아 두는 보관함. 나중에 재처리 명령으로 다시 처리합니다.</dd>
-        <dt>대사</dt><dd>우리 기록과 결제사가 보내 준 거래 내역 파일을 맞춰 보며 빠진 것·금액이 다른 것·중복된 것을 찾는 일.</dd>
+        <dt>멱등 키</dt><dd>요청마다 붙이는 이름표(<code>Idempotency-Key</code>). 같은 이름표가 또 오면 서버는 처음 결과를 그대로 돌려줍니다.</dd>
+        <dt>낙관적 잠금</dt><dd>잠그지 않고 진행하다가, 그 사이 다른 주문이 재고를 바꿨으면(버전이 달라졌으면) 다시 읽고 재시도하는 방식입니다.</dd>
+        <dt>비관적 잠금</dt><dd>재고를 먼저 잠그고 한 명씩 처리하는 방식입니다.</dd>
+        <dt>아웃박스</dt><dd>주문이나 결제를 바꿀 때 "알릴 내용"도 같은 DB 트랜잭션에 함께 적어 두고, 나중에 따로 전달하는 방식입니다. 주문은 바뀌었는데 알림만 사라지는 일이 없습니다.</dd>
+        <dt>dead-letter</dt><dd>여러 번 다시 시도해도 처리하지 못한 건을 버리지 않고 모아 두는 보관함입니다. 나중에 재처리 명령으로 다시 처리합니다.</dd>
+        <dt>대사</dt><dd>우리 기록과 결제사가 준 거래 내역 파일을 맞춰 보며 빠진 거래나 금액이 다른 거래를 찾는 일입니다.</dd>
       </dl>
     </details>
   </section>
 </main>
-<footer><span>모든 데이터는 합성입니다. 외부 요청을 하지 않는 정적 페이지입니다. 쿠키는 "설명을 봤는지"를 기억하는 하나(ol_tour)만 쓰고, 식별 정보는 담지 않습니다.</span></footer>
+<footer><span>예시 데이터만 씁니다. 이 페이지는 외부 서버에 요청을 보내지 않습니다. 쿠키는 설명을 이미 봤는지 기억하는 ol_tour 하나만 쓰고, 개인 정보는 담지 않습니다.</span></footer>
 
 <aside id="tour" class="tour" aria-labelledby="tour-title" hidden>
   <div class="tour-head"><span class="mono" id="tour-prog" aria-live="off">1/8</span><button id="tour-collapse" class="ghost2" type="button">접기</button></div>
