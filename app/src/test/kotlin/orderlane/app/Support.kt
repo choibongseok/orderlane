@@ -31,18 +31,22 @@ import java.util.UUID
 // Infra 의 초기화 중 다른 스레드(컨테이너 생성 콜백)가 Infra 필드를 읽으면 교착하므로 포트는 파일 수준 값으로 둔다
 private val KAFKA_PORT: Int = ServerSocket(0).use { it.localPort }
 
+// 브로커가 알리는 주소와 호스트 포트를 같은 값으로 고정해 클라이언트가 항상 같은 주소로 붙게 한다(compose 구성과 같은 설정).
+// 콜백이 Infra 의 정적 메서드가 되면 Infra 초기화 중에 교착하므로 파일 수준 함수로 만든다.
+private fun newBroker(): GenericContainer<*> = GenericContainer<Nothing>("redpandadata/redpanda:v24.2.7").apply {
+    withCommand("redpanda", "start", "--smp=1", "--memory=512M", "--overprovisioned", "--node-id=0", "--check=false",
+        "--kafka-addr=0.0.0.0:$KAFKA_PORT", "--advertise-kafka-addr=127.0.0.1:$KAFKA_PORT")
+    withExposedPorts(KAFKA_PORT)
+    withCreateContainerCmdModifier { it.hostConfig!!.withPortBindings(PortBinding(Ports.Binding.bindPort(KAFKA_PORT), ExposedPort(KAFKA_PORT))) }
+    waitingFor(Wait.forListeningPort())
+}
+
 /** 실제 PostgreSQL·Redis·Redpanda(Kafka 호환)와 모의 결제 게이트웨이를 JVM 하나에서 한 번만 띄운다. */
 object Infra {
     val pg = PostgreSQLContainer("postgres:16-alpine").withDatabaseName("orderlane").withUsername("orderlane").withPassword("orderlane")
     val redis = GenericContainer("redis:7-alpine").withExposedPorts(6379)
-    // 브로커가 알리는 주소와 호스트 포트를 같은 값으로 고정해 클라이언트가 항상 같은 주소로 붙게 한다(compose 구성과 같은 설정)
     val kafkaPort: Int = KAFKA_PORT
-    val broker = GenericContainer("redpandadata/redpanda:v24.2.7")
-        .withCommand("redpanda", "start", "--smp=1", "--memory=512M", "--overprovisioned", "--node-id=0", "--check=false",
-            "--kafka-addr=0.0.0.0:$KAFKA_PORT", "--advertise-kafka-addr=127.0.0.1:$KAFKA_PORT")
-        .withExposedPorts(KAFKA_PORT)
-        .withCreateContainerCmdModifier { it.hostConfig!!.withPortBindings(PortBinding(Ports.Binding.bindPort(KAFKA_PORT), ExposedPort(KAFKA_PORT))) }
-        .waitingFor(Wait.forListeningPort())
+    val broker = newBroker()
     val gateway: GatewayServer
     val appPort: Int = ServerSocket(0).use { it.localPort }
 
