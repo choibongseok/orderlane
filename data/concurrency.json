@@ -1,0 +1,69 @@
+{
+  "buyersPerRound": 24,
+  "strategies": [
+    {
+      "strategy": "optimistic",
+      "rounds": 50,
+      "buyersPerRound": 24,
+      "cases": [
+        {
+          "stock": 1,
+          "rounds": 25,
+          "buyers": 24,
+          "oversold": 0,
+          "soldPerRound": [
+            1
+          ],
+          "finalStock": [
+            0
+          ]
+        },
+        {
+          "stock": 5,
+          "rounds": 25,
+          "buyers": 24,
+          "oversold": 0,
+          "soldPerRound": [
+            5
+          ],
+          "finalStock": [
+            0
+          ]
+        }
+      ],
+      "totalOversold": 0
+    },
+    {
+      "strategy": "pessimistic",
+      "rounds": 50,
+      "buyersPerRound": 24,
+      "cases": [
+        {
+          "stock": 1,
+          "rounds": 25,
+          "buyers": 24,
+          "oversold": 0,
+          "soldPerRound": [
+            1
+          ],
+          "finalStock": [
+            0
+          ]
+        },
+        {
+          "stock": 5,
+          "rounds": 25,
+          "buyers": 24,
+          "oversold": 0,
+          "soldPerRound": [
+            5
+          ],
+          "finalStock": [
+            0
+          ]
+        }
+      ],
+      "totalOversold": 0
+    }
+  ]
+}

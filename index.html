@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orderlane · 주문 처리 시뮬레이터</title>
+<meta name="description" content="같은 주문이 두 번 들어오거나 결제 응답이 안 올 때 돈과 재고가 틀어지지 않게 처리하는 과정을 보여 주는 데모. 도메인 규칙은 서버와 같은 Kotlin 코드를 JavaScript 로 컴파일해 브라우저에서 실행한다.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skiplink" href="#timeline">본문으로 건너뛰기</a>
+<header class="top">
+  <div class="crumb"><span class="word">orderlane</span><span class="slash">/</span><span class="path">order-simulator</span></div>
+  <p class="banner" id="banner" role="note"><strong>브라우저 시뮬레이션</strong> — 도메인 규칙만 실제 코드(Kotlin → JavaScript). <span id="engine">엔진 불러오는 중</span>. 네트워크·DB·브로커 없음.</p>
+  <button id="theme" class="ghost" type="button" aria-label="테마 전환(다크/라이트)">◐</button>
+</header>
+
+<main class="grid">
+  <section class="panel hero" aria-labelledby="h-hero">
+    <h1 id="h-hero">같은 주문이 두 번 들어오거나 결제 응답이 안 올 때, 돈과 재고가 틀어지지 않게 처리하는 과정을 보여 주는 데모입니다.</h1>
+    <p class="lead">일부러 고장을 내 보면서 주문·결제·정산이 어떻게 안전하게 끝나는지 확인합니다. 모든 데이터는 가짜입니다.</p>
+    <div class="hero-btns">
+      <button id="tour-start" class="primary" type="button">설명 따라가기</button>
+      <button id="tour-skip" class="ghost2" type="button">직접 해 보기</button>
+    </div>
+  </section>
+
+  <section class="panel controls" id="p-controls" aria-labelledby="h-scn">
+    <h2 id="h-scn" class="ptitle">상황 고르기</h2>
+    <div id="scenarios" class="presets" role="radiogroup" aria-label="상황"></div>
+    <div class="vars">
+      <div class="var failset" id="fail-box">
+        <span class="legend" id="variants-label">일부러 고장 내 보기</span>
+        <div id="variants" class="presets" role="radiogroup" aria-labelledby="variants-label"></div>
+      </div>
+      <div id="params" class="var" hidden>
+        <span class="legend">조건 바꾸기</span>
+        <div class="row">
+          <label for="p-stock">재고</label><input id="p-stock" type="number" min="1" max="20" value="1">
+          <label for="p-buyers">동시에 주문하는 사람</label><input id="p-buyers" type="number" min="2" max="40" value="5">
+        </div>
+      </div>
+    </div>
+    <p class="sublabel" id="scenario-desc"></p>
+  </section>
+
+  <section class="panel result" id="p-result" aria-labelledby="h-res">
+    <h2 id="h-res" class="ptitle">결과</h2>
+    <p class="what" id="verdict-title"></p>
+    <p class="easy" id="easy"></p>
+    <p class="meta" id="verdict" role="status"></p>
+  </section>
+  <div class="stats" id="p-stats" aria-label="결과 수치"></div>
+
+  <section class="panel tl" id="p-timeline" aria-labelledby="h-tl">
+    <h2 id="h-tl" class="ptitle"><span id="scenario-title" tabindex="-1">진행 순서</span></h2>
+    <div class="strip" id="strip" aria-hidden="true"></div>
+    <ol id="timeline" class="timeline" aria-live="polite"></ol>
+  </section>
+
+  <section class="panel rules" id="p-rules" aria-labelledby="h-rules">
+    <h2 id="h-rules" class="ptitle">실제로 실행된 도메인 규칙 호출 <span class="tag">domain</span></h2>
+    <div class="scroll"><table id="rules"><thead><tr><th>시간</th><th>주체</th><th>호출한 규칙</th><th>상태</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="panel log" id="p-log" aria-labelledby="h-tests">
+    <h2 id="h-tests" class="ptitle">실제 테스트 실행 출력 <span class="tag">make verify</span></h2>
+    <p class="hint">아래는 <code>make verify</code> 가 돌린 결과 파일을 그대로 읽은 것입니다. 이 사이트가 만든 숫자가 아닙니다.</p>
+    <table id="test-summary"><thead><tr><th>종류</th><th>무엇을 시험하나</th><th>통과</th><th>실패</th></tr></thead><tbody></tbody></table>
+    <details id="test-list"><summary>테스트 전체 목록 (<span id="test-count">0</span>건)</summary><pre class="term" id="test-output" tabindex="0"></pre></details>
+  </section>
+
+  <section class="panel conc" id="p-conc" aria-labelledby="h-conc">
+    <h2 id="h-conc" class="ptitle">동시성 테스트 결과 <span class="tag">초과 판매</span></h2>
+    <p class="hint">마지막 재고에 <span id="conc-buyers">24</span>명이 동시에 주문하는 시험을 두 가지 잠금 방식으로 라운드마다 재고를 되돌려 반복했습니다. 초과 판매 0 이 목표입니다.</p>
+    <div class="scroll"><table id="conc"><thead><tr><th>잠금 방식</th><th>재고</th><th>반복</th><th>초과 판매</th><th>라운드별 판매 수</th><th>종료 재고</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="panel e2e" id="p-e2e" aria-labelledby="h-e2e">
+    <h2 id="h-e2e" class="ptitle">전체 구성 시험이 확인한 것 <span class="tag">e2e</span></h2>
+    <p class="hint">앱·결제 게이트웨이(모의)·PostgreSQL·Redis·브로커를 compose 로 올려 바깥에서 확인한 내용입니다. 정산·결제사 대조도 여기서 확인합니다.</p>
+    <ul id="e2e" class="plain"></ul>
+  </section>
+
+  <section class="panel glossary" aria-labelledby="h-gl">
+    <details>
+      <summary id="h-gl">용어 풀이</summary>
+      <dl>
+        <dt>멱등 키</dt><dd>같은 요청인지 알아보려고 요청마다 붙이는 이름표(<code>Idempotency-Key</code>). 같은 이름표면 처음 결과를 그대로 돌려줍니다.</dd>
+        <dt>낙관적 잠금</dt><dd>잠그지 않고 진행하되, 그 사이 다른 사람이 바꿨으면(버전이 달라졌으면) 다시 읽고 재시도하는 방식.</dd>
+        <dt>비관적 잠금</dt><dd>재고 칸을 먼저 잠그고 한 명씩 처리하는 방식.</dd>
+        <dt>아웃박스</dt><dd>주문·결제 변경과 같은 트랜잭션에 "보낼 소식"을 같이 적어 두고 따로 전달하는 방식. 변경과 소식이 따로 놀지 않습니다.</dd>
+        <dt>dead-letter</dt><dd>여러 번 재시도해도 처리하지 못한 소식을 버리지 않고 모아 두는 보관함. 나중에 재처리 명령으로 다시 처리합니다.</dd>
+        <dt>대사</dt><dd>우리 기록과 결제사가 보내 준 거래 내역 파일을 맞춰 보며 빠진 것·금액이 다른 것·중복된 것을 찾는 일.</dd>
+      </dl>
+    </details>
+  </section>
+</main>
+<footer><span>모든 데이터는 합성입니다. 외부 요청을 하지 않는 정적 페이지입니다. 쿠키는 "설명을 봤는지"를 기억하는 하나(ol_tour)만 쓰고, 식별 정보는 담지 않습니다.</span></footer>
+
+<aside id="tour" class="tour" aria-labelledby="tour-title" hidden>
+  <div class="tour-head"><span class="mono" id="tour-prog" aria-live="off">1/8</span><button id="tour-collapse" class="ghost2" type="button">접기</button></div>
+  <h2 id="tour-title" tabindex="-1"></h2>
+  <div id="tour-text" aria-live="polite"></div>
+  <p class="look" id="tour-look"></p>
+  <div class="tour-nav">
+    <button id="tour-prev" class="ghost2" type="button">이전</button>
+    <button id="tour-next" class="primary" type="button">다음</button>
+    <button id="tour-auto" class="ghost2" type="button" aria-pressed="false">자동 진행 켜기</button>
+  </div>
+  <p class="hint" id="tour-keys">← → 키로 넘길 수 있습니다.</p>
+</aside>
+<button id="tour-open" class="tour-reopen" type="button" hidden>설명 열기</button>
+<script type="module" src="app.js"></script>
+</body>
+</html>
