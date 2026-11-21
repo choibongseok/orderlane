@@ -1,0 +1,80 @@
+# 로컬 실행용 전체 구성. 호스트 포트는 다른 프로젝트와 겹치지 않게 586xx 대역을 쓴다.
+name: orderlane
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: orderlane
+      POSTGRES_USER: orderlane
+      POSTGRES_PASSWORD: orderlane
+    ports: ["58632:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orderlane -d orderlane"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    ports: ["58679:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  broker:
+    image: redpandadata/redpanda:v24.2.7
+    command:
+      - redpanda
+      - start
+      - --smp=1
+      - --memory=512M
+      - --overprovisioned
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=internal://0.0.0.0:9092
+      - --advertise-kafka-addr=internal://broker:9092
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -q 'Healthy:.*true'"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+
+  gateway:
+    build: ./gateway
+    environment:
+      GATEWAY_PORT: "8090"
+      GATEWAY_LATE_RESPONSE_MS: "2500"
+      GATEWAY_HOLD_MS: "5000"
+    ports: ["58690:8090"]
+
+  app:
+    build: ./app
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      broker: { condition: service_healthy }
+      gateway: { condition: service_started }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orderlane
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:9092
+      ORDERLANE_GATEWAY_BASE_URL: http://gateway:8090
+      ORDERLANE_GATEWAY_CALLBACK_URL: http://app:8080/callbacks/payments
+      ORDERLANE_GATEWAY_TIMEOUT_MS: "1000"
+      ORDERLANE_PAYMENT_INQUIRY_INTERVAL_MS: "500"
+      ORDERLANE_PAYMENT_HELD_INTERVAL_MS: "1000"
+      ORDERLANE_PAYMENT_POLL_MS: "200"
+      ORDERLANE_OUTBOX_POLL_MS: "200"
+      ORDERLANE_CONSUMER_BASE_DELAY_MS: "100"
+      ORDERLANE_FAULTS_ENABLED: "true"
+    ports: ["58680:8080"]
+    stop_grace_period: 40s
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080 && printf \"GET /actuator/health/readiness HTTP/1.0\\r\\n\\r\\n\" >&3 && grep -q 200 <&3'"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 15s
